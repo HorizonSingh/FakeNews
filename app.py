@@ -1,37 +1,48 @@
 import streamlit as st
 import pickle
 
-# Load saved model and vectorizer
+# -----------------------------
+# Load trained model & vectorizer
+# -----------------------------
 model = pickle.load(open("model.pkl", "rb"))
 vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
 
+# -----------------------------
+# Page Settings
+# -----------------------------
 st.set_page_config(page_title="Fake News Detector", page_icon="📰")
 
 st.title("📰 Fake News Detector")
-st.write("Paste a news article below and check if it's Real or Fake.")
+st.write("Paste a news article below and check whether it is REAL or FAKE.")
 
-# Text input box
+# -----------------------------
+# User Input
+# -----------------------------
 user_input = st.text_area("Enter News Article Here:", height=200)
 
-# Predict button
+# -----------------------------
+# Prediction
+# -----------------------------
 if st.button("Predict"):
-    if user_input.strip() != "":
-        
-        # Convert input text to numerical form
+
+    if user_input.strip() == "":
+        st.warning("⚠️ Please enter some text.")
+    else:
+        # Convert text to numerical form
         transformed_input = vectorizer.transform([user_input])
-        
+
         # Make prediction
         prediction = model.predict(transformed_input)
-        
-        # Get confidence
-        probability = model.predict_proba(transformed_input)
+        probabilities = model.predict_proba(transformed_input)
 
+        # Get class labels
+        classes = model.classes_
+
+        # Find confidence
+        confidence = round(max(probabilities[0]) * 100, 2)
+
+        # Display Result
         if prediction[0] == "FAKE":
-            st.error("🚨 This looks like FAKE news!")
+            st.error(f"🚨 This looks like FAKE news!\n\nConfidence: {confidence}%")
         else:
-            st.success("✅ This looks like REAL news!")
-
-        st.write(f"Confidence Score: {round(max(probability[0]) * 100, 2)}%")
-
-    else:
-        st.warning("Please enter some text before predicting.")
+            st.success(f"✅ This looks like REAL news!\n\nConfidence: {confidence}%")
