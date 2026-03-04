@@ -42,7 +42,7 @@ if st.button("Predict"):
         confidence = round(max(probabilities[0]) * 100, 2)
 
         # Display Result
-        if prediction[0] == "FAKE":
-            st.error(f"🚨 This looks like FAKE news!\n\nConfidence: {confidence}%")
+        if prediction[0] == "0":
+            st.error(f"🚨✅ This looks like REAL news!\n\nConfidence: {confidence}%")
         else:
-            st.success(f"✅ This looks like REAL news!\n\nConfidence: {confidence}%")
+            st.success(f"🚨 This looks like FAKE news!\n\nConfidence: {confidence}%")
